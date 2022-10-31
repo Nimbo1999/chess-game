@@ -8,6 +8,7 @@ import { isValidMove } from 'utils/chess.utils';
 interface ChessContextProperties {
     onDrop: Props['onDrop'];
     onMouseOverSquare: Props['onMouseOverSquare'];
+    onMouseOutSquare: Props['onMouseOutSquare'];
     position: ChessState['fen'];
     squareStyles: ChessState['squareStyles'];
     history: ChessState['history'];
@@ -23,7 +24,8 @@ interface ChessProvider {
 
 export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
     const { current: game } = useRef(new Chess());
-    const [state, { movePiece, highlightSquare }] = useChessReducer();
+    const [state, { movePiece, highlightSquare, removeHighlightSquare }] =
+        useChessReducer();
 
     const onDrop: Props['onDrop'] = ({ sourceSquare, targetSquare }) => {
         const move = game.move({
@@ -48,7 +50,6 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
             square,
             verbose: true,
         });
-        console.log(moves);
         if (moves.length === 0) return;
         const squaresToHighLight = moves.map((move) =>
             typeof move !== 'string' ? move.to : ''
@@ -56,11 +57,14 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
         highlightSquare({ sourceSquare: square, squaresToHighLight });
     };
 
+    const onMouseOutSquare = removeHighlightSquare;
+
     return (
         <ChessContext.Provider
             value={{
                 onDrop,
                 onMouseOverSquare,
+                onMouseOutSquare,
                 position: state.fen,
                 history: state.history,
                 squareStyles: state.squareStyles,

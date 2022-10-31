@@ -16,4 +16,11 @@ export type HighlightSquareAction = {
     };
 };
 
-export type ChessActions = MovePieceAction | HighlightSquareAction;
+export type RemoveHighlightSquareAction = {
+    type: 'REMOVE_HIGH_LIGHT_SQUARE';
+};
+
+export type ChessActions =
+    | MovePieceAction
+    | HighlightSquareAction
+    | RemoveHighlightSquareAction;

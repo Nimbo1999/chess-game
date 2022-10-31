@@ -57,7 +57,12 @@ const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
                 squareStyles: { ...state.squareStyles, ...highlightStyles },
             };
         }
-
+        case 'REMOVE_HIGH_LIGHT_SQUARE': {
+            return {
+                ...state,
+                squareStyles: squareStyling(state.pieceSquare, state.history),
+            };
+        }
         default: {
             return state;
         }
@@ -69,6 +74,7 @@ type ChessReducerHook = [
     {
         movePiece: (payload: MovePieceAction['payload']) => void;
         highlightSquare: (payload: HighlightSquareAction['payload']) => void;
+        removeHighlightSquare: () => void;
     }
 ];
 
@@ -81,5 +87,8 @@ export const useChessReducer = (): ChessReducerHook => {
     const highlightSquare = (payload: HighlightSquareAction['payload']) =>
         dispatch({ type: 'HIGH_LIGHT_SQUARE', payload });
 
-    return [state, { movePiece, highlightSquare }];
+    const removeHighlightSquare = () =>
+        dispatch({ type: 'REMOVE_HIGH_LIGHT_SQUARE' });
+
+    return [state, { movePiece, highlightSquare, removeHighlightSquare }];
 };

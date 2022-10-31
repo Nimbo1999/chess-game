@@ -2,7 +2,13 @@ import Chessboard from 'chessboardjsx';
 import { useChess } from 'contexts';
 
 const ChessBoard: React.FC = () => {
-    const { onDrop, onMouseOverSquare, position, squareStyles } = useChess();
+    const {
+        onDrop,
+        onMouseOverSquare,
+        onMouseOutSquare,
+        position,
+        squareStyles,
+    } = useChess();
 
     return (
         <Chessboard
@@ -14,6 +20,7 @@ const ChessBoard: React.FC = () => {
             }}
             onDrop={onDrop}
             onMouseOverSquare={onMouseOverSquare}
+            onMouseOutSquare={onMouseOutSquare}
         />
     );
 };
