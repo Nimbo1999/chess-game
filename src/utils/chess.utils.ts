@@ -20,4 +20,8 @@ export const squareStyling = (
     };
 };
 
-export const isValidMove = (move: Move | null) => move !== null;
+export const isValidMove = (move?: Move | null): boolean =>
+    move !== null && move !== undefined;
+
+export const isAPromotionMovement = (move?: Move): boolean =>
+    move !== undefined && !!move.promotion;

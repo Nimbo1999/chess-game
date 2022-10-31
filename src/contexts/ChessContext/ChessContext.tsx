@@ -1,9 +1,9 @@
 import { createContext, useContext, useRef } from 'react';
 import { Props } from 'chessboardjsx';
-import { Chess, Square } from 'chess.js';
+import { Chess, Move } from 'chess.js';
 
 import { useChessReducer, ChessState } from 'reducers';
-import { isValidMove } from 'utils/chess.utils';
+import { isValidMove, isAPromotionMovement } from 'utils/chess.utils';
 
 interface ChessContextProperties {
     onDrop: Props['onDrop'];
@@ -31,22 +31,27 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
     ] = useChessReducer();
 
     const onDrop: Props['onDrop'] = ({ sourceSquare, targetSquare }) => {
-        const move = game.move({
-            from: sourceSquare,
-            to: targetSquare,
-            /** @todo Verify if there is a ease way of multichoice for user. */
-            // promotion: 'q',
-        });
+        const [movement] = (
+            game.moves({
+                square: sourceSquare,
+                verbose: true,
+            }) as Move[]
+        ).filter((move: Move) => move.to === targetSquare);
 
-        if (isValidMove(move)) {
-            movePiece({
-                fen: game.fen(),
-                history: game.history({ verbose: true }),
-            });
+        if (!isValidMove(movement)) return;
+        if (isAPromotionMovement(movement)) {
+            game.move({ from: sourceSquare, to: targetSquare, promotion: 'q' });
+        } else {
+            game.move({ from: sourceSquare, to: targetSquare });
         }
+
+        movePiece({
+            fen: game.fen(),
+            history: game.history({ verbose: true }),
+        });
     };
 
-    const onMouseOverSquare = (square: Square) => {
+    const onMouseOverSquare: Props['onMouseOverSquare'] = (square) => {
         const moves = game.moves({
             square,
             verbose: true,
@@ -58,9 +63,9 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
         highlightSquare({ sourceSquare: square, squaresToHighLight });
     };
 
-    const onMouseOutSquare = removeHighlightSquare;
+    const onMouseOutSquare: Props['onMouseOutSquare'] = removeHighlightSquare;
 
-    const onSquareClick = (square: Square) => {
+    const onSquareClick: Props['onSquareClick'] = (square) => {
         squareClick({ square });
 
         const move = game.move({
