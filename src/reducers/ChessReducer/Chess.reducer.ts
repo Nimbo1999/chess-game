@@ -7,6 +7,9 @@ import {
     type ChessActions,
     type MovePieceAction,
     type HighlightSquareAction,
+    type SquareClickAction,
+    type SquareClickPayloadWithoutHistory,
+    type SquareClickPayloadWithHistory,
 } from './Chess.actions';
 
 export interface ChessState {
@@ -63,6 +66,25 @@ const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
                 squareStyles: squareStyling(state.pieceSquare, state.history),
             };
         }
+        case 'SQUARE_CLICK': {
+            if (Object.hasOwn(action.payload, 'square')) {
+                const payload =
+                    action.payload as SquareClickPayloadWithoutHistory;
+                return {
+                    ...state,
+                    squareStyles: squareStyling(payload.square, state.history),
+                    pieceSquare: payload.square,
+                };
+            }
+
+            const payload = action.payload as SquareClickPayloadWithHistory;
+            return {
+                ...state,
+                fen: payload.fen,
+                history: payload.history,
+                pieceSquare: '',
+            };
+        }
         default: {
             return state;
         }
@@ -75,6 +97,7 @@ type ChessReducerHook = [
         movePiece: (payload: MovePieceAction['payload']) => void;
         highlightSquare: (payload: HighlightSquareAction['payload']) => void;
         removeHighlightSquare: () => void;
+        squareClick: (payload: SquareClickAction['payload']) => void;
     }
 ];
 
@@ -90,5 +113,11 @@ export const useChessReducer = (): ChessReducerHook => {
     const removeHighlightSquare = () =>
         dispatch({ type: 'REMOVE_HIGH_LIGHT_SQUARE' });
 
-    return [state, { movePiece, highlightSquare, removeHighlightSquare }];
+    const squareClick = (payload: SquareClickAction['payload']) =>
+        dispatch({ type: 'SQUARE_CLICK', payload });
+
+    return [
+        state,
+        { movePiece, highlightSquare, removeHighlightSquare, squareClick },
+    ];
 };

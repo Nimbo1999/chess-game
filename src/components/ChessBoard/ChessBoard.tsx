@@ -6,6 +6,7 @@ const ChessBoard: React.FC = () => {
         onDrop,
         onMouseOverSquare,
         onMouseOutSquare,
+        onSquareClick,
         position,
         squareStyles,
     } = useChess();
@@ -21,6 +22,7 @@ const ChessBoard: React.FC = () => {
             onDrop={onDrop}
             onMouseOverSquare={onMouseOverSquare}
             onMouseOutSquare={onMouseOutSquare}
+            onSquareClick={onSquareClick}
         />
     );
 };
