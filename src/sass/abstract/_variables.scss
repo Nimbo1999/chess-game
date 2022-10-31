@@ -1,0 +1,13 @@
+@use 'sass:map';
+
+$font-family: 'Poppins', sans-serif;
+$palette: (
+    primary: (
+        default: #B58863,
+        light: #F0D9B5,
+    ),
+    contrast: (
+        default: #000000,
+        light: #FFFFFF
+    )
+);

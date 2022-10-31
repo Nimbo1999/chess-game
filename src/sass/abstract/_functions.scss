@@ -1,0 +1,13 @@
+@function get-color($color, $tone: default) {
+    @if map-has-key($palette, $color) {
+        $color: map-get($palette, $color);
+
+        @if map-has-key($color, $tone) {
+            @return map-get($color, $tone);
+        }
+
+        @error 'Tone does not exists #{$tone} in color';
+    }
+
+    @error 'Color does not exists #{$color}, #{$tone} in palette';
+}
