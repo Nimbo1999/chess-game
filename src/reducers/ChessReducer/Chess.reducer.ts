@@ -40,18 +40,28 @@ const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
         }
         case 'HIGH_LIGHT_SQUARE': {
             const { sourceSquare, squaresToHighLight } = action.payload;
-            const highlightStyles = [
+            const currentAffectedSquares = [
                 sourceSquare,
                 ...squaresToHighLight,
-            ].reduce(
+            ];
+            const squareStyle = squareStyling(state.pieceSquare, state.history);
+
+            for (const square of currentAffectedSquares) {
+                if (Object.hasOwn(squareStyle, square)) {
+                    delete squareStyle[square];
+                }
+            }
+
+            const highlightStyles = currentAffectedSquares.reduce(
                 (previousValue, currentValue) => ({
                     ...previousValue,
                     [currentValue]: {
                         background:
                             'radial-gradient(circle, #fffc00 36%, transparent 40%)',
                         borderRadius: '50%',
+                        zIndex: '2',
                     },
-                    ...squareStyling(state.pieceSquare, state.history),
+                    ...squareStyle,
                 }),
                 {}
             );

@@ -35,10 +35,8 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
             from: sourceSquare,
             to: targetSquare,
             /** @todo Verify if there is a ease way of multichoice for user. */
-            promotion: 'q',
+            // promotion: 'q',
         });
-
-        console.log({ game });
 
         if (isValidMove(move)) {
             movePiece({
@@ -68,7 +66,7 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
         const move = game.move({
             from: state.pieceSquare,
             to: square,
-            promotion: 'q',
+            // promotion: 'q',
         });
 
         if (isValidMove(move)) {
