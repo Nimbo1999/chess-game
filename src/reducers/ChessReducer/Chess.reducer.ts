@@ -1,18 +1,20 @@
 import { Move } from 'chess.js';
+import { type Props } from 'chessboardjsx';
 import { useReducer, Reducer } from 'react';
+import { squareStyling } from 'utils/chess.utils';
+
+import {
+    type ChessActions,
+    type MovePieceAction,
+    type HighlightSquareAction,
+} from './Chess.actions';
 
 export interface ChessState {
     fen: string;
     square: string;
     pieceSquare: string;
-    history: Move[];
-}
-
-interface DummyAction {
-    type: 'ADD';
-    payload: {
-        count: number;
-    };
+    history: (string | Move)[];
+    squareStyles: Props['squareStyles'];
 }
 
 const initialState: ChessState = {
@@ -20,30 +22,64 @@ const initialState: ChessState = {
     square: '',
     pieceSquare: '',
     history: [],
+    squareStyles: {},
 };
 
-const reducer: Reducer<ChessState, DummyAction> = (state, action) => {
+const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
     switch (action.type) {
-        case 'ADD':
+        case 'MOVE_PIECE': {
             return {
                 ...state,
-                fen: '',
+                fen: action.payload.fen,
+                history: action.payload.history,
+                squareStyles: squareStyling(state.pieceSquare, state.history),
             };
-        default:
+        }
+        case 'HIGH_LIGHT_SQUARE': {
+            const { sourceSquare, squaresToHighLight } = action.payload;
+            const highlightStyles = [
+                sourceSquare,
+                ...squaresToHighLight,
+            ].reduce(
+                (previousValue, currentValue) => ({
+                    ...previousValue,
+                    [currentValue]: {
+                        background:
+                            'radial-gradient(circle, #fffc00 36%, transparent 40%)',
+                        borderRadius: '50%',
+                    },
+                    ...squareStyling(state.pieceSquare, state.history),
+                }),
+                {}
+            );
+            return {
+                ...state,
+                squareStyles: { ...state.squareStyles, ...highlightStyles },
+            };
+        }
+
+        default: {
             return state;
+        }
     }
 };
 
 type ChessReducerHook = [
     ChessState,
-    { movePiece: (payload: DummyAction['payload']) => void }
+    {
+        movePiece: (payload: MovePieceAction['payload']) => void;
+        highlightSquare: (payload: HighlightSquareAction['payload']) => void;
+    }
 ];
 
 export const useChessReducer = (): ChessReducerHook => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const movePiece = (payload: DummyAction['payload']) =>
-        dispatch({ type: 'ADD', payload });
+    const movePiece = (payload: MovePieceAction['payload']) =>
+        dispatch({ type: 'MOVE_PIECE', payload });
 
-    return [state, { movePiece }];
+    const highlightSquare = (payload: HighlightSquareAction['payload']) =>
+        dispatch({ type: 'HIGH_LIGHT_SQUARE', payload });
+
+    return [state, { movePiece, highlightSquare }];
 };
