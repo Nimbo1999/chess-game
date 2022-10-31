@@ -1,8 +1,14 @@
 .container {
     display: flex;
     align-items: center;
-    max-width: 35rem;
+    justify-content: center;
     width: 100%;
     margin: 0 auto;
     height: 100vh;
+
+    &__row {
+        display: flex;
+        gap: 2rem;
+    }
 }
+
