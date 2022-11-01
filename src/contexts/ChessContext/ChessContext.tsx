@@ -1,6 +1,6 @@
-import { createContext, useContext, useRef } from 'react';
+import { createContext, useContext, useRef, useCallback } from 'react';
 import { Props } from 'chessboardjsx';
-import { Chess, Move } from 'chess.js';
+import { Chess, Move, Square } from 'chess.js';
 
 import { useChessReducer, ChessState } from 'reducers';
 import { isValidMove, isAPromotionMovement } from 'utils/chess.utils';
@@ -38,40 +38,59 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
         { movePiece, highlightSquare, removeHighlightSquare, squareClick },
     ] = useChessReducer();
 
-    const onDrop: Props['onDrop'] = ({ sourceSquare, targetSquare }) => {
-        const [movement] = (
-            game.moves({
-                square: sourceSquare,
+    const onDrop = useCallback(
+        ({
+            sourceSquare,
+            targetSquare,
+        }: {
+            sourceSquare: Square;
+            targetSquare: Square;
+        }) => {
+            const [movement] = (
+                game.moves({
+                    square: sourceSquare,
+                    verbose: true,
+                }) as Move[]
+            ).filter((move: Move) => move.to === targetSquare);
+
+            if (!isValidMove(movement)) return;
+            if (isAPromotionMovement(movement)) {
+                game.move({
+                    from: sourceSquare,
+                    to: targetSquare,
+                    promotion: 'q',
+                });
+            } else {
+                game.move({ from: sourceSquare, to: targetSquare });
+            }
+
+            movePiece({
+                fen: game.fen(),
+                history: game.history({ verbose: true }),
+            });
+        },
+        [movePiece]
+    );
+
+    const onMouseOverSquare = useCallback(
+        (square: Square) => {
+            const moves = game.moves({
+                square,
                 verbose: true,
-            }) as Move[]
-        ).filter((move: Move) => move.to === targetSquare);
+            });
+            if (moves.length === 0) return;
+            const squaresToHighLight = moves.map((move) =>
+                typeof move !== 'string' ? move.to : ''
+            );
+            highlightSquare({ sourceSquare: square, squaresToHighLight });
+        },
+        [highlightSquare]
+    );
 
-        if (!isValidMove(movement)) return;
-        if (isAPromotionMovement(movement)) {
-            game.move({ from: sourceSquare, to: targetSquare, promotion: 'q' });
-        } else {
-            game.move({ from: sourceSquare, to: targetSquare });
-        }
-
-        movePiece({
-            fen: game.fen(),
-            history: game.history({ verbose: true }),
-        });
-    };
-
-    const onMouseOverSquare: Props['onMouseOverSquare'] = (square) => {
-        const moves = game.moves({
-            square,
-            verbose: true,
-        });
-        if (moves.length === 0) return;
-        const squaresToHighLight = moves.map((move) =>
-            typeof move !== 'string' ? move.to : ''
-        );
-        highlightSquare({ sourceSquare: square, squaresToHighLight });
-    };
-
-    const onMouseOutSquare: Props['onMouseOutSquare'] = removeHighlightSquare;
+    const onMouseOutSquare: Props['onMouseOutSquare'] = useCallback(
+        removeHighlightSquare,
+        [removeHighlightSquare]
+    );
 
     const getMetaData = (): ChessMetaData => ({
         isCheck: game.isCheck(),
