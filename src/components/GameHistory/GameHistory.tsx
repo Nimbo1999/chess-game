@@ -12,7 +12,11 @@ const GameHistory: React.FC = () => {
             if (!ulref.current) return;
             const ulChildren = ulref.current.children;
             const lastElement = ulChildren.item(ulChildren.length - 1);
-            if (lastElement)
+            if (
+                lastElement &&
+                !!ulref.current.scrollTo &&
+                typeof ulref.current.scrollTo === 'function'
+            )
                 ulref.current.scrollTo({
                     behavior: 'smooth',
                     top: (lastElement as HTMLElement).offsetTop,
