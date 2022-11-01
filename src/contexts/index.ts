@@ -1,1 +1,5 @@
-export { ChessProvider, useChess } from './ChessContext/ChessContext';
+export {
+    ChessProvider,
+    useChess,
+    type ChessMetaData,
+} from './ChessContext/ChessContext';

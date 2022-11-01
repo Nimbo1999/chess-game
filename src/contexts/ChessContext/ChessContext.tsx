@@ -5,11 +5,19 @@ import { Chess, Move } from 'chess.js';
 import { useChessReducer, ChessState } from 'reducers';
 import { isValidMove, isAPromotionMovement } from 'utils/chess.utils';
 
+export type ChessMetaData = {
+    isCheck: boolean;
+    isCheckmate: boolean;
+    isStalemate: boolean;
+    isDraw: boolean;
+};
+
 interface ChessContextProperties {
     onDrop: Props['onDrop'];
     onMouseOverSquare: Props['onMouseOverSquare'];
     onMouseOutSquare: Props['onMouseOutSquare'];
     onSquareClick: Props['onSquareClick'];
+    getMetaData: () => ChessMetaData;
     position: ChessState['fen'];
     squareStyles: ChessState['squareStyles'];
     history: ChessState['history'];
@@ -65,13 +73,19 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
 
     const onMouseOutSquare: Props['onMouseOutSquare'] = removeHighlightSquare;
 
+    const getMetaData = (): ChessMetaData => ({
+        isCheck: game.isCheck(),
+        isCheckmate: game.isCheckmate(),
+        isStalemate: game.isStalemate(),
+        isDraw: game.isDraw(),
+    });
+
     const onSquareClick: Props['onSquareClick'] = (square) => {
         squareClick({ square });
 
         const move = game.move({
             from: state.pieceSquare,
             to: square,
-            // promotion: 'q',
         });
 
         if (isValidMove(move)) {
@@ -89,6 +103,7 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
                 onMouseOverSquare,
                 onMouseOutSquare,
                 onSquareClick,
+                getMetaData,
                 position: state.fen,
                 history: state.history,
                 squareStyles: state.squareStyles,
