@@ -1,15 +1,23 @@
+import { Move } from 'chess.js';
+import { useChess } from 'contexts';
+import styles from './GameHistory.module.scss';
+
 const GameHistory: React.FC = () => {
+    const { history } = useChess();
+
     return (
-        <div>
+        <div className={styles.container}>
             <h3>History</h3>
+
             <ul>
-                <li>Round 0 aaaa</li>
-                <li>Round 1 aaaa</li>
-                <li>Round 2 aaaa</li>
-                <li>Round 3 aaaa</li>
-                <li>Round 4 aaaa</li>
-                <li>Round 5 aaaa</li>
-                <li>Round 6 aaaa</li>
+                {history.map((move, i) => {
+                    const movement: Move = move as Move;
+                    return (
+                        <li key={movement.color + movement.san}>
+                            Round {i} - ({movement.color + '-' + movement.san})
+                        </li>
+                    );
+                })}
             </ul>
         </div>
     );

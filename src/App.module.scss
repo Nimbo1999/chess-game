@@ -2,12 +2,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    margin: 0 auto;
     height: 100vh;
 
     &__row {
         display: flex;
+        justify-content: center;
+        width: 100%;
         gap: 2rem;
     }
 }

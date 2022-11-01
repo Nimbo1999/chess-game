@@ -3,6 +3,7 @@ import { Move } from 'chess.js';
 
 import { useChess, type ChessMetaData } from 'contexts';
 import { chessMetadataText } from 'utils/text.utils';
+import styles from './CurrentRoundInfo.module.scss';
 
 type ChessMetaDataKey = keyof ChessMetaData;
 
@@ -28,7 +29,7 @@ const CurrentRoundInfo: React.FC = () => {
     }, [history]);
 
     return (
-        <div>
+        <div className={styles.container}>
             <h3>Round {history.length}</h3>
             <p>{getRoundText()}</p>
             {Object.keys(metaData).map((key) =>
