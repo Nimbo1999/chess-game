@@ -1,12 +1,36 @@
 @import '/src/sass/';
 
 .container {
-    flex: 0 0 12.5rem;
+    flex: 1;
     background-color: get-color(primary, light);
     padding: 1rem;
 
     &__ul {
         overflow: auto;
         max-height: 35rem;
+    }
+
+    &__list-item {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        &:not(:last-child) {
+            margin-bottom: .5rem;
+        }
+    }
+
+    &__rollback {
+        cursor: pointer;
+        appearance: none;
+        border: none;
+        font-size: .875rem;
+        letter-spacing: 1px;
+        padding: 2px .5rem;
+        text-transform: uppercase;
+        background-color: get-color(primary);
+        color: get-color(contrast, light);
+        font-weight: bold;
+        border-radius: .5rem;
     }
 }

@@ -1,22 +1,22 @@
 import { Move } from 'chess.js';
+import { type HistoryMove } from 'reducers';
 
 export const squareStyling = (
     pieceSquare: string,
-    history: (string | Move)[],
+    history: HistoryMove[],
     backgroundColor = 'rgba(255, 255, 0, 0.4)'
 ) => {
-    const lastElement = history.at(-1);
+    const lastMove = history.at(-1);
+    if (!lastMove) return { [pieceSquare]: { backgroundColor } };
+    if (!lastMove.move) return { [pieceSquare]: { backgroundColor } };
 
-    if (!lastElement || typeof lastElement === 'string') {
-        return {
-            [pieceSquare]: { backgroundColor },
-        };
-    }
+    if (typeof lastMove.move === 'string')
+        return { [pieceSquare]: { backgroundColor } };
 
     return {
         [pieceSquare]: { backgroundColor },
-        [lastElement.from]: { backgroundColor },
-        [lastElement.to]: { backgroundColor },
+        [lastMove.move.from]: { backgroundColor },
+        [lastMove.move.to]: { backgroundColor },
     };
 };
 

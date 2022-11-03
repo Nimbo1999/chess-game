@@ -1,1 +1,5 @@
-export { useChessReducer, type ChessState } from './ChessReducer/Chess.reducer';
+export {
+    useChessReducer,
+    type ChessState,
+    type HistoryMove,
+} from './ChessReducer/Chess.reducer';

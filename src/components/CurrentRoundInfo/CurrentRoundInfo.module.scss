@@ -1,7 +1,17 @@
 @import '/src/sass/';
 
 .container {
-    flex: 0 0 12.5rem;
+    flex: 1;
     background-color: get-color(primary, light);
     padding: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-title {
+    margin-bottom: 1rem;
+}
+
+.panel {
+    flex: 1;
 }

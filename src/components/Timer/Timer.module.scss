@@ -1,0 +1,38 @@
+@import '/src/sass/';
+
+@mixin timerCell {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    font-size: 1rem;
+    line-height: 1;
+    padding: .5rem;
+    background-color: get-color(primary);
+    color: get-color(contrast, light);
+    border: 1px solid get-color(primary, light);
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.timer {
+    display: flex;
+    margin: 1rem 0;
+    transition: all 250ms ease-out;
+    opacity: .8;
+    transform: scale(.8);
+
+    &__number {
+        flex: 0 0 2rem;
+        @include timerCell;
+    }
+
+    &__colon {
+        flex: 0 0 .875rem;
+        @include timerCell;
+    }
+
+    &.active {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

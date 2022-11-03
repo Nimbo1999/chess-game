@@ -1,11 +1,11 @@
 import { Move } from 'chess.js';
-import { useChess } from 'contexts';
 import { useEffect, useRef } from 'react';
+import { useChess } from 'contexts';
 import styles from './GameHistory.module.scss';
 
 const GameHistory: React.FC = () => {
     const ulref = useRef<HTMLUListElement>(null);
-    const { history } = useChess();
+    const { history, onRollback } = useChess();
 
     useEffect(() => {
         const runEffect = () => {
@@ -30,11 +30,37 @@ const GameHistory: React.FC = () => {
             <h3>History</h3>
 
             <ul className={styles['container__ul']} ref={ulref}>
-                {history.map((move, i) => {
-                    const movement: Move = move as Move;
+                {history.map((historyMove, i) => {
+                    const movement: Move | null =
+                        historyMove.move as Move | null;
+                    const key = movement
+                        ? movement.color + movement.san + i
+                        : 'initial-movement';
+                    const label = movement
+                        ? movement.color + '-' + movement.san
+                        : 'Start point';
                     return (
-                        <li key={movement.color + movement.san + i}>
-                            Round {i} - ({movement.color + '-' + movement.san})
+                        <li
+                            key={key}
+                            className={styles['container__list-item']}
+                        >
+                            {i} - ({label})
+                            {history.length - 1 !== i && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        console.log(historyMove);
+                                        onRollback(
+                                            historyMove.fen,
+                                            historyMove.timer,
+                                            i
+                                        );
+                                    }}
+                                    className={styles['container__rollback']}
+                                >
+                                    Rollback
+                                </button>
+                            )}
                         </li>
                     );
                 })}

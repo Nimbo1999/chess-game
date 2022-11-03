@@ -11,42 +11,78 @@ import {
     type SquareClickPayloadWithoutHistory,
     type SquareClickPayloadWithHistory,
     type ApplyTimerConfigurationAction,
+    type ChangeTimerAction,
+    type RollbackAction,
 } from './Chess.actions';
 
-type Timer = {
+export type Timer = {
     w: number;
     b: number;
+};
+
+export type HistoryMove = {
+    fen: string;
+    move: string | Move | null;
+    timer: Timer;
 };
 
 export interface ChessState {
     fen: string;
     square: string;
     pieceSquare: string;
-    history: (string | Move)[];
+    history: HistoryMove[];
     squareStyles: Props['squareStyles'];
+    initialTime: number;
     timer: Timer;
+    isRollback: boolean;
 }
 
 const initialState: ChessState = {
     fen: 'start',
     square: '',
     pieceSquare: '',
-    history: [],
+    history: [{ fen: 'start', move: null, timer: { b: 0, w: 0 } }],
     squareStyles: {},
+    initialTime: 0,
     timer: {
         w: 0,
         b: 0,
     },
+    isRollback: false,
 };
 
 const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
     switch (action.type) {
         case 'MOVE_PIECE': {
+            if (state.history.length === 1) {
+                return {
+                    ...state,
+                    fen: action.payload.fen,
+                    history: [
+                        {
+                            fen: 'start',
+                            move: null,
+                            timer: {
+                                b: state.initialTime,
+                                w: state.initialTime,
+                            },
+                        },
+                        action.payload.lastHistoryObject,
+                    ],
+                    squareStyles: squareStyling(
+                        state.pieceSquare,
+                        state.history
+                    ),
+                    isRollback: false,
+                };
+            }
+
             return {
                 ...state,
                 fen: action.payload.fen,
-                history: action.payload.history,
+                history: [...state.history, action.payload.lastHistoryObject],
                 squareStyles: squareStyling(state.pieceSquare, state.history),
+                isRollback: false,
             };
         }
         case 'HIGH_LIGHT_SQUARE': {
@@ -102,17 +138,41 @@ const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
             return {
                 ...state,
                 fen: payload.fen,
-                history: payload.history,
+                history: [...state.history, payload.lastHistoryObject],
                 pieceSquare: '',
             };
         }
         case 'APPLY_TIMER_CONFIGURATION_ACTION': {
             return {
                 ...state,
+                initialTime: action.payload.timer,
                 timer: {
                     b: action.payload.timer,
                     w: action.payload.timer,
                 },
+            };
+        }
+        case 'DECREASE_TIMER_ACTION': {
+            return {
+                ...state,
+                timer: {
+                    ...state.timer,
+                    [action.payload.color]:
+                        state.timer[action.payload.color] - 1,
+                },
+            };
+        }
+        case 'ROLLBACK_ACTION': {
+            return {
+                ...state,
+                fen: action.payload.fen,
+                history: action.payload.history,
+                timer: action.payload.timer,
+                squareStyles: squareStyling(
+                    state.pieceSquare,
+                    action.payload.history
+                ),
+                isRollback: true,
             };
         }
         default: {
@@ -131,6 +191,8 @@ type ChessReducerHook = [
         configTimer: (
             payload: ApplyTimerConfigurationAction['payload']
         ) => void;
+        decreaseTimer: (payload: ChangeTimerAction['payload']) => void;
+        rollback: (payload: RollbackAction['payload']) => void;
     }
 ];
 
@@ -152,6 +214,12 @@ export const useChessReducer = (): ChessReducerHook => {
     const configTimer = (payload: ApplyTimerConfigurationAction['payload']) =>
         dispatch({ type: 'APPLY_TIMER_CONFIGURATION_ACTION', payload });
 
+    const decreaseTimer = (payload: ChangeTimerAction['payload']) =>
+        dispatch({ type: 'DECREASE_TIMER_ACTION', payload });
+
+    const rollback = (payload: RollbackAction['payload']) =>
+        dispatch({ type: 'ROLLBACK_ACTION', payload });
+
     return [
         state,
         {
@@ -160,6 +228,8 @@ export const useChessReducer = (): ChessReducerHook => {
             removeHighlightSquare,
             squareClick,
             configTimer,
+            decreaseTimer,
+            rollback,
         },
     ];
 };

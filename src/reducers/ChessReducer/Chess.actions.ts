@@ -1,10 +1,11 @@
-import { Move, Square } from 'chess.js';
+import { Square } from 'chess.js';
+import { HistoryMove, Timer } from './Chess.reducer';
 
 export type MovePieceAction = {
     type: 'MOVE_PIECE';
     payload: {
         fen: string;
-        history: (string | Move)[];
+        lastHistoryObject: HistoryMove;
     };
 };
 
@@ -22,7 +23,7 @@ export type RemoveHighlightSquareAction = {
 
 export type SquareClickPayloadWithHistory = {
     fen: string;
-    history: (string | Move)[];
+    lastHistoryObject: HistoryMove;
 };
 
 export type SquareClickPayloadWithoutHistory = {
@@ -41,9 +42,27 @@ export type ApplyTimerConfigurationAction = {
     };
 };
 
+export type ChangeTimerAction = {
+    type: 'DECREASE_TIMER_ACTION';
+    payload: {
+        color: 'w' | 'b';
+    };
+};
+
+export type RollbackAction = {
+    type: 'ROLLBACK_ACTION';
+    payload: {
+        fen: string;
+        history: HistoryMove[];
+        timer: Timer;
+    };
+};
+
 export type ChessActions =
     | MovePieceAction
     | HighlightSquareAction
     | RemoveHighlightSquareAction
     | SquareClickAction
-    | ApplyTimerConfigurationAction;
+    | ApplyTimerConfigurationAction
+    | ChangeTimerAction
+    | RollbackAction;
