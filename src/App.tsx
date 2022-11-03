@@ -1,20 +1,17 @@
+import { Suspense } from 'react';
 import { ChessProvider } from 'contexts';
-import { ChessBoard, GameHistory, CurrentRoundInfo } from 'components';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import styles from './App.module.scss';
+import { routes } from 'pages';
 
-function App() {
-    return (
-        <div className={styles['container']}>
-            <div className={styles['container__row']}>
-                <ChessProvider>
-                    <GameHistory />
-                    <ChessBoard />
-                    <CurrentRoundInfo />
-                </ChessProvider>
-            </div>
-        </div>
-    );
-}
+const browserRouter = createBrowserRouter(routes);
+
+const App: React.FC = () => (
+    <ChessProvider>
+        <Suspense fallback={<>Loading...</>}>
+            <RouterProvider router={browserRouter} />
+        </Suspense>
+    </ChessProvider>
+);
 
 export default App;

@@ -1,10 +1,10 @@
 import userEvent from '@testing-library/user-event';
-import { render, screen } from 'utils/test.utils';
-import App from './App';
+import { renderWithProvider, screen } from 'utils/test.utils';
+import GamePage from './Game';
 
 describe('', () => {
     it('Should Render the GameHistory, ChessBoard and CurrentRoundInfo components', () => {
-        render(<App />);
+        renderWithProvider(<GamePage />);
         const gameHistory = screen.getByRole('heading', { name: /history/i });
         const CurrentRoundInfo = screen.getByRole('heading', {
             name: /round 0/i,
@@ -17,7 +17,7 @@ describe('', () => {
     });
 
     it('Should move wP-a2 to wP-a4', async () => {
-        const { container } = render(<App />);
+        const { container } = renderWithProvider(<GamePage />);
         const sourceSquare = container.querySelector('div[data-squareid="a2"]');
         const targetSquare = container.querySelector('div[data-squareid="a4"]');
         if (!sourceSquare || !targetSquare)
