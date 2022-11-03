@@ -1,0 +1,24 @@
+@import '/src/sass';
+
+.input {
+    appearance: none;
+    border: 2px solid rgba(get-color(contrast), .7);
+    padding: 4px .5rem;
+    border-radius: .5rem;
+    outline: none;
+    color: get-color(contrast);
+    font-family: inherit;
+
+    &:focus {
+        border: 2px solid get-color(blue);
+    }
+
+    &:disabled {
+        opacity: .5;
+    }
+
+    &__invalid {
+        border: 2px solid get-color(red);
+        color: get-color(red);
+    }
+}

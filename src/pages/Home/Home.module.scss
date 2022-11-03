@@ -1,0 +1,40 @@
+@import '/src/sass';
+
+.container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image:
+        linear-gradient(
+            to bottom right,
+            rgba(get-color(contrast, default),.05),
+            rgba(get-color(contrast, default),.5)
+        );
+    background-position: top center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    padding: 2rem;
+}
+
+.form {
+    padding: 2rem;
+    border: 1px solid rgba(get-color(primary), .2);
+    border-radius: .5rem;
+    background-color: rgba(get-color(primary), .8);
+    color: white;
+    box-shadow: $button-shadow;
+
+    &__title {
+        font-size: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: unset;
+        font-weight: 300;
+    }
+
+    &__description {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        max-width: 30.5rem;
+    }
+}

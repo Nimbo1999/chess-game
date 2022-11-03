@@ -18,9 +18,12 @@ interface ChessContextProperties {
     onMouseOutSquare: Props['onMouseOutSquare'];
     onSquareClick: Props['onSquareClick'];
     getMetaData: () => ChessMetaData;
+    onSetupTimer: (timer: number) => void;
     position: ChessState['fen'];
     squareStyles: ChessState['squareStyles'];
     history: ChessState['history'];
+    blacksTimer: number;
+    whitesTimer: number;
 }
 
 const ChessContext = createContext<ChessContextProperties>(
@@ -35,7 +38,13 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
     const { current: game } = useRef(new Chess());
     const [
         state,
-        { movePiece, highlightSquare, removeHighlightSquare, squareClick },
+        {
+            movePiece,
+            highlightSquare,
+            removeHighlightSquare,
+            squareClick,
+            configTimer,
+        },
     ] = useChessReducer();
 
     const onDrop = useCallback(
@@ -115,6 +124,8 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
         }
     };
 
+    const onSetupTimer = (timer: number) => configTimer({ timer });
+
     return (
         <ChessContext.Provider
             value={{
@@ -123,9 +134,12 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
                 onMouseOutSquare,
                 onSquareClick,
                 getMetaData,
+                onSetupTimer,
                 position: state.fen,
                 history: state.history,
                 squareStyles: state.squareStyles,
+                blacksTimer: state.timer.b,
+                whitesTimer: state.timer.w,
             }}
         >
             {children}

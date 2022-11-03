@@ -31,7 +31,9 @@ const CurrentRoundInfo: React.FC = () => {
     return (
         <div className={styles.container}>
             <h3>Round {history.length}</h3>
+
             <p>{getRoundText()}</p>
+
             {Object.keys(metaData).map((key) =>
                 metaData[key as ChessMetaDataKey] ? (
                     <p key={key}>

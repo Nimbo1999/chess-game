@@ -1,0 +1,25 @@
+@import '/src/sass';
+
+.button {
+    cursor: pointer;
+    appearance: none;
+    border: none;
+    padding: .5rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: inherit;
+    border-radius: .5rem;
+    background-color: get-color(grey, light);
+    color: get-color(grey, dark);
+    box-shadow: $button-shadow;
+
+    &__primary {
+        background-color: get-color(primary);
+        color: get-color(contrast, light);
+    }
+
+    &__success {
+        background-color: get-color(green);
+        color: get-color(contrast, light);
+    }
+}

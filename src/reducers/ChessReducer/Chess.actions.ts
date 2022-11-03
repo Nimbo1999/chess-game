@@ -34,8 +34,16 @@ export type SquareClickAction = {
     payload: SquareClickPayloadWithHistory | SquareClickPayloadWithoutHistory;
 };
 
+export type ApplyTimerConfigurationAction = {
+    type: 'APPLY_TIMER_CONFIGURATION_ACTION';
+    payload: {
+        timer: number;
+    };
+};
+
 export type ChessActions =
     | MovePieceAction
     | HighlightSquareAction
     | RemoveHighlightSquareAction
-    | SquareClickAction;
+    | SquareClickAction
+    | ApplyTimerConfigurationAction;

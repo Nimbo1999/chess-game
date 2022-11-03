@@ -10,7 +10,13 @@ import {
     type SquareClickAction,
     type SquareClickPayloadWithoutHistory,
     type SquareClickPayloadWithHistory,
+    type ApplyTimerConfigurationAction,
 } from './Chess.actions';
+
+type Timer = {
+    w: number;
+    b: number;
+};
 
 export interface ChessState {
     fen: string;
@@ -18,6 +24,7 @@ export interface ChessState {
     pieceSquare: string;
     history: (string | Move)[];
     squareStyles: Props['squareStyles'];
+    timer: Timer;
 }
 
 const initialState: ChessState = {
@@ -26,6 +33,10 @@ const initialState: ChessState = {
     pieceSquare: '',
     history: [],
     squareStyles: {},
+    timer: {
+        w: 0,
+        b: 0,
+    },
 };
 
 const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
@@ -95,6 +106,15 @@ const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
                 pieceSquare: '',
             };
         }
+        case 'APPLY_TIMER_CONFIGURATION_ACTION': {
+            return {
+                ...state,
+                timer: {
+                    b: action.payload.timer,
+                    w: action.payload.timer,
+                },
+            };
+        }
         default: {
             return state;
         }
@@ -108,6 +128,9 @@ type ChessReducerHook = [
         highlightSquare: (payload: HighlightSquareAction['payload']) => void;
         removeHighlightSquare: () => void;
         squareClick: (payload: SquareClickAction['payload']) => void;
+        configTimer: (
+            payload: ApplyTimerConfigurationAction['payload']
+        ) => void;
     }
 ];
 
@@ -126,8 +149,17 @@ export const useChessReducer = (): ChessReducerHook => {
     const squareClick = (payload: SquareClickAction['payload']) =>
         dispatch({ type: 'SQUARE_CLICK', payload });
 
+    const configTimer = (payload: ApplyTimerConfigurationAction['payload']) =>
+        dispatch({ type: 'APPLY_TIMER_CONFIGURATION_ACTION', payload });
+
     return [
         state,
-        { movePiece, highlightSquare, removeHighlightSquare, squareClick },
+        {
+            movePiece,
+            highlightSquare,
+            removeHighlightSquare,
+            squareClick,
+            configTimer,
+        },
     ];
 };
