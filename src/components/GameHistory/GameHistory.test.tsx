@@ -20,14 +20,14 @@ const TestComponent: React.FC = () => {
 };
 
 describe('HameHistory component test cases', () => {
-    it('Should Start with none history', () => {
+    it('Should Start with 1 history object. The Start point', () => {
         renderWithProvider(<GameHistory />);
 
         const heading = screen.getByRole('heading', { name: /history/i });
         expect(heading).toBeInTheDocument();
 
         const listItems = screen.queryAllByRole('listitem');
-        expect(listItems).toHaveLength(0);
+        expect(listItems).toHaveLength(1);
     });
 
     it('Should add a movement to the history panel', async () => {
@@ -42,6 +42,6 @@ describe('HameHistory component test cases', () => {
         await userEvent.click(button);
 
         const listItems = screen.queryAllByRole('listitem');
-        expect(listItems).toHaveLength(1);
+        expect(listItems).toHaveLength(2);
     });
 });

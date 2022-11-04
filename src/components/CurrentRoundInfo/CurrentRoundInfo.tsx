@@ -67,7 +67,10 @@ const CurrentRoundInfo: React.FC = () => {
 
     return (
         <div className={styles.container}>
-            <h3 className={styles['game-title']}>Round {history.length}</h3>
+            <h3 className={styles['game-title']}>
+                Round {history.length} -{' '}
+                {isActive('w') ? "White's turn" : "Black's turn"}
+            </h3>
 
             <section className={styles['panel']}>
                 <h4>White&apos;s</h4>

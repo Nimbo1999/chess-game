@@ -1,12 +1,17 @@
 import userEvent from '@testing-library/user-event';
 
 import { useChess } from 'contexts';
+import { useEffect } from 'react';
 import { renderWithProvider, screen } from 'utils/test.utils';
 
 import CurrentRoundInfo from './CurrentRoundInfo';
 
 const TestComponent: React.FC = () => {
-    const { onDrop } = useChess();
+    const { onDrop, onSetupTimer } = useChess();
+
+    useEffect(() => {
+        onSetupTimer(200);
+    }, []);
 
     return (
         <button
@@ -24,7 +29,9 @@ describe('CurrentRoundInfo test cases', () => {
     it('Should Start with default values.', () => {
         renderWithProvider(<CurrentRoundInfo />);
         const heading = screen.getByRole('heading', { name: /Round/ });
-        const whitesFirstRound = screen.getByText("White's turn");
+        const whitesFirstRound = screen.getByRole('heading', {
+            name: /White's turn/i,
+        });
 
         expect(heading).toBeInTheDocument();
         expect(whitesFirstRound).toBeInTheDocument();
@@ -41,10 +48,10 @@ describe('CurrentRoundInfo test cases', () => {
         const button = screen.getByRole('button', { name: /Move/ });
         await userEvent.click(button);
 
-        const heading = screen.getByRole('heading', { name: /Round 1/ });
-        const blackRound = screen.getByText("Black's turn");
+        const heading = screen.getByRole('heading', {
+            name: /Round 2 - Black's turn/,
+        });
 
         expect(heading).toBeInTheDocument();
-        expect(blackRound).toBeInTheDocument();
     });
 });

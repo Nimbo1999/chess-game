@@ -75,9 +75,10 @@ const MobileModalGameInfo: React.FC = () => {
 
     return ReactDom.createPortal(
         <div className={classNames}>
-            <ul className={styles['modal__list']}>
-                <li className={styles['modal__list-item']}>Round info</li>
-            </ul>
+            <h3 className={styles['modal__title']}>
+                Round {history.length} -{' '}
+                {isActive('w') ? "White's turn" : "Black's turn"}
+            </h3>
 
             <div className={styles['modal__content']}>
                 <section className={styles['modal__panel']}>
