@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Move } from 'chess.js';
 
 import { useChess, type ChessMetaData } from 'contexts';
-import { Timer, Button } from 'components';
+import { Timer, Button, ArrowLeft, ArrowRight } from 'components';
 import { chessMetadataText } from 'utils/text.utils';
+
 import styles from './CurrentRoundInfo.module.scss';
 
 type ChessMetaDataKey = keyof ChessMetaData;
@@ -14,8 +15,17 @@ const CurrentRoundInfo: React.FC = () => {
         isCheckmate: false,
         isDraw: false,
         isStalemate: false,
+        isGameOver: false,
     });
-    const { history, getMetaData, blacksTimer, whitesTimer } = useChess();
+    const {
+        history,
+        blacksTimer,
+        whitesTimer,
+        inspectRound,
+        getMetaData,
+        changeInspectValue,
+        onClickNewGame,
+    } = useChess();
 
     const lastMovement = history.at(-1);
 
@@ -32,6 +42,23 @@ const CurrentRoundInfo: React.FC = () => {
         ) : null
     );
 
+    const onPressUndo = () => {
+        if (inspectRound === 0) return;
+        if (inspectRound !== null && inspectRound > 0) {
+            return changeInspectValue(inspectRound - 1);
+        }
+        if (inspectRound === null) {
+            changeInspectValue(history.length - 2);
+        }
+    };
+
+    const onPressMoveFoward = () => {
+        if (inspectRound !== null && inspectRound < history.length - 2) {
+            return changeInspectValue(inspectRound + 1);
+        }
+        changeInspectValue(null);
+    };
+
     useEffect(() => {
         const runEffect = () => setMetaData(getMetaData());
         runEffect();
@@ -45,23 +72,74 @@ const CurrentRoundInfo: React.FC = () => {
             <section className={styles['panel']}>
                 <h4>White&apos;s</h4>
 
-                <Timer timer={whitesTimer} isActive={isActive('w')} />
+                <Timer
+                    timer={
+                        inspectRound !== null
+                            ? history.at(inspectRound)!.timer.w
+                            : whitesTimer
+                    }
+                    isActive={isActive('w')}
+                />
 
+                {whitesTimer === 0 && <p>{chessMetadataText['isOutOfTime']}</p>}
                 {isActive('w') && renderMetaData}
             </section>
 
             <section className={styles['panel']}>
                 <h4>Black&apos;s</h4>
 
-                <Timer timer={blacksTimer} isActive={isActive('b')} />
+                <Timer
+                    timer={
+                        inspectRound !== null
+                            ? history.at(inspectRound)!.timer.b
+                            : blacksTimer
+                    }
+                    isActive={isActive('b')}
+                />
 
+                {blacksTimer === 0 && <p>{chessMetadataText['isOutOfTime']}</p>}
                 {isActive('b') && renderMetaData}
             </section>
 
             <section className={styles['panel']}>
                 <h4>Match status</h4>
 
-                <Button>Undu</Button>
+                <footer className={styles['panel__footer']}>
+                    <Button
+                        btnType="primary"
+                        className={styles['panel__button']}
+                        title="Undo movement"
+                        onClick={onPressUndo}
+                        disabled={
+                            history.length < 2 ||
+                            (inspectRound !== null && inspectRound < 1)
+                        }
+                    >
+                        <ArrowLeft />
+                    </Button>
+
+                    <Button
+                        btnType="primary"
+                        className={styles['panel__button']}
+                        title="Foward movement"
+                        onClick={onPressMoveFoward}
+                        disabled={
+                            inspectRound === null ||
+                            (inspectRound !== null &&
+                                inspectRound === history.length - 1)
+                        }
+                    >
+                        <ArrowRight />
+                    </Button>
+
+                    <Button
+                        btnType="primary"
+                        className={styles['panel__button']}
+                        onClick={onClickNewGame}
+                    >
+                        New Game
+                    </Button>
+                </footer>
             </section>
         </div>
     );

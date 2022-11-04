@@ -22,4 +22,9 @@
         background-color: get-color(green);
         color: get-color(contrast, light);
     }
+
+    &:disabled {
+        opacity: .4;
+        cursor: default;
+    }
 }

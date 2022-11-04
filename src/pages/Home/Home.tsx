@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 
 import { GroupInput, Button } from 'components';
@@ -10,7 +10,7 @@ import { useChess } from 'contexts';
 type FormValues = { minutes: string; seconds: string };
 
 const Home: React.FC = () => {
-    const { onSetupTimer } = useChess();
+    const { onSetupTimer, initialTime } = useChess();
     const navigate = useNavigate();
 
     const {
@@ -24,6 +24,9 @@ const Home: React.FC = () => {
         onSetupTimer(total);
         navigate(ROUTE_CONSTANTS.GAME_PAGE);
     };
+
+    if (initialTime > 0)
+        return <Navigate to={ROUTE_CONSTANTS.GAME_PAGE} replace />;
 
     return (
         <div className={styles.container}>

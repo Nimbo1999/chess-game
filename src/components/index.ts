@@ -5,3 +5,6 @@ export { default as Input, type InputRef } from './Input/Input';
 export { default as GroupInput } from './GroupInput/GroupInput';
 export { default as Button } from './Button/Button';
 export { default as Timer } from './Timer/Timer';
+export { default as HydrateComponent } from './HydrateComponent/HydrateComponent';
+export { default as ArrowLeft } from './Icons/ArrowLeft';
+export { default as ArrowRight } from './Icons/ArrowRight';

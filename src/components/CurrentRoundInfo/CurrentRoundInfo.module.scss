@@ -14,4 +14,19 @@
 
 .panel {
     flex: 1;
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding-top: 1rem;
+    }
+
+    &__button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 40px;
+    }
 }

@@ -13,6 +13,8 @@ import {
     type ApplyTimerConfigurationAction,
     type ChangeTimerAction,
     type RollbackAction,
+    HydrateStateAction,
+    ChangeInspectRoundAction,
 } from './Chess.actions';
 
 export type Timer = {
@@ -35,6 +37,7 @@ export interface ChessState {
     initialTime: number;
     timer: Timer;
     isRollback: boolean;
+    inspectRound: number | null;
 }
 
 const initialState: ChessState = {
@@ -49,11 +52,22 @@ const initialState: ChessState = {
         b: 0,
     },
     isRollback: false,
+    inspectRound: null,
 };
 
 const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
     switch (action.type) {
         case 'MOVE_PIECE': {
+            const history =
+                state.inspectRound !== null
+                    ? state.history.slice(0, state.inspectRound)
+                    : state.history.slice(0);
+
+            const timer =
+                state.inspectRound !== null
+                    ? state.history.at(state.inspectRound)!.timer
+                    : state.timer;
+
             if (state.history.length === 1) {
                 return {
                     ...state,
@@ -74,15 +88,18 @@ const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
                         state.history
                     ),
                     isRollback: false,
+                    inspectRound: null,
                 };
             }
 
             return {
                 ...state,
                 fen: action.payload.fen,
-                history: [...state.history, action.payload.lastHistoryObject],
+                history: [...history, action.payload.lastHistoryObject],
+                timer,
                 squareStyles: squareStyling(state.pieceSquare, state.history),
                 isRollback: false,
+                inspectRound: null,
             };
         }
         case 'HIGH_LIGHT_SQUARE': {
@@ -175,6 +192,18 @@ const reducer: Reducer<ChessState, ChessActions> = (state, action) => {
                 isRollback: true,
             };
         }
+        case 'HYDRATE_STATE_ACTION': {
+            return action.payload;
+        }
+        case 'CHANGE_INSPECT_ROUD_ACTION': {
+            return {
+                ...state,
+                inspectRound: action.payload.inspect,
+            };
+        }
+        case 'RESET_GAME_ACTION': {
+            return initialState;
+        }
         default: {
             return state;
         }
@@ -193,6 +222,9 @@ type ChessReducerHook = [
         ) => void;
         decreaseTimer: (payload: ChangeTimerAction['payload']) => void;
         rollback: (payload: RollbackAction['payload']) => void;
+        hydrateReducer: (payload: HydrateStateAction['payload']) => void;
+        setInspect: (payload: ChangeInspectRoundAction['payload']) => void;
+        resetGame: () => void;
     }
 ];
 
@@ -220,6 +252,14 @@ export const useChessReducer = (): ChessReducerHook => {
     const rollback = (payload: RollbackAction['payload']) =>
         dispatch({ type: 'ROLLBACK_ACTION', payload });
 
+    const hydrateReducer = (payload: HydrateStateAction['payload']) =>
+        dispatch({ type: 'HYDRATE_STATE_ACTION', payload });
+
+    const setInspect = (payload: ChangeInspectRoundAction['payload']) =>
+        dispatch({ type: 'CHANGE_INSPECT_ROUD_ACTION', payload });
+
+    const resetGame = () => dispatch({ type: 'RESET_GAME_ACTION' });
+
     return [
         state,
         {
@@ -230,6 +270,9 @@ export const useChessReducer = (): ChessReducerHook => {
             configTimer,
             decreaseTimer,
             rollback,
+            hydrateReducer,
+            setInspect,
+            resetGame,
         },
     ];
 };

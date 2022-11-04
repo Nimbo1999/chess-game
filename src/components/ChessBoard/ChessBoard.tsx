@@ -9,23 +9,35 @@ const ChessBoard: React.FC = () => {
         onMouseOverSquare,
         onMouseOutSquare,
         onSquareClick,
+        getMetaData,
         position,
         squareStyles,
+        inspectRound,
+        history,
+        whitesTimer,
+        blacksTimer,
     } = useChess();
+
+    const isGameOver =
+        whitesTimer === 0 || blacksTimer === 0 || getMetaData().isGameOver;
 
     return (
         <div className={styles.container}>
             <Chessboard
                 id="chestboard"
-                position={position}
-                squareStyles={squareStyles}
+                position={
+                    inspectRound !== null
+                        ? history.at(inspectRound)?.fen
+                        : position
+                }
+                squareStyles={isGameOver ? undefined : squareStyles}
                 boardStyle={{
                     boxShadow: '0 5px 10px rgba(0, 0, 0, 0.5)',
                 }}
-                onDrop={onDrop}
-                onMouseOverSquare={onMouseOverSquare}
-                onMouseOutSquare={onMouseOutSquare}
-                onSquareClick={onSquareClick}
+                onDrop={isGameOver ? undefined : onDrop}
+                onMouseOverSquare={isGameOver ? undefined : onMouseOverSquare}
+                onMouseOutSquare={isGameOver ? undefined : onMouseOutSquare}
+                onSquareClick={isGameOver ? undefined : onSquareClick}
             />
         </div>
     );

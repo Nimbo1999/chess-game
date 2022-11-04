@@ -49,7 +49,6 @@ const GameHistory: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        console.log(historyMove);
                                         onRollback(
                                             historyMove.fen,
                                             historyMove.timer,

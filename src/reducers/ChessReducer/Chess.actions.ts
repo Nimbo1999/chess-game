@@ -1,5 +1,5 @@
 import { Square } from 'chess.js';
-import { HistoryMove, Timer } from './Chess.reducer';
+import { ChessState, HistoryMove, Timer } from './Chess.reducer';
 
 export type MovePieceAction = {
     type: 'MOVE_PIECE';
@@ -58,6 +58,22 @@ export type RollbackAction = {
     };
 };
 
+export type HydrateStateAction = {
+    type: 'HYDRATE_STATE_ACTION';
+    payload: ChessState;
+};
+
+export type ChangeInspectRoundAction = {
+    type: 'CHANGE_INSPECT_ROUD_ACTION';
+    payload: {
+        inspect: number | null;
+    };
+};
+
+export type ResetGameAction = {
+    type: 'RESET_GAME_ACTION';
+};
+
 export type ChessActions =
     | MovePieceAction
     | HighlightSquareAction
@@ -65,4 +81,7 @@ export type ChessActions =
     | SquareClickAction
     | ApplyTimerConfigurationAction
     | ChangeTimerAction
-    | RollbackAction;
+    | RollbackAction
+    | HydrateStateAction
+    | ChangeInspectRoundAction
+    | ResetGameAction;

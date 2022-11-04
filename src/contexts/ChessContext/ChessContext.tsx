@@ -11,12 +11,14 @@ import { Chess, Move, Square } from 'chess.js';
 import { useChessReducer, ChessState, HistoryMove } from 'reducers';
 import { isValidMove, isAPromotionMovement } from 'utils/chess.utils';
 import { Timer } from 'reducers/ChessReducer/Chess.reducer';
+import { AppStorage } from 'services';
 
 export type ChessMetaData = {
     isCheck: boolean;
     isCheckmate: boolean;
     isStalemate: boolean;
     isDraw: boolean;
+    isGameOver: boolean;
 };
 
 interface ChessContextProperties {
@@ -27,12 +29,17 @@ interface ChessContextProperties {
     getMetaData: () => ChessMetaData;
     onSetupTimer: (timer: number) => void;
     onRollback: (fen: string, timer: Timer, index: number) => void;
+    hydrateState: (callback: () => void) => void;
+    changeInspectValue: (inspect: number | null) => void;
+    onClickNewGame: () => void;
     position: ChessState['fen'];
     squareStyles: ChessState['squareStyles'];
     history: ChessState['history'];
     blacksTimer: number;
     whitesTimer: number;
     isRollBack: boolean;
+    initialTime: number;
+    inspectRound: number | null;
 }
 
 const ChessContext = createContext<ChessContextProperties>(
@@ -41,9 +48,13 @@ const ChessContext = createContext<ChessContextProperties>(
 
 interface ChessProvider {
     children: React.ReactNode;
+    storage: AppStorage;
 }
 
-export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
+export const ChessProvider: React.FC<ChessProvider> = ({
+    children,
+    storage,
+}) => {
     const { current: game } = useRef(new Chess());
     const [
         state,
@@ -55,6 +66,9 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
             configTimer,
             decreaseTimer,
             rollback,
+            hydrateReducer,
+            setInspect,
+            resetGame,
         },
     ] = useChessReducer();
 
@@ -86,6 +100,7 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
 
             const fen = game.fen();
 
+            storage.writeState(state);
             movePiece({
                 fen,
                 lastHistoryObject: {
@@ -125,6 +140,7 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
         isCheckmate: game.isCheckmate(),
         isStalemate: game.isStalemate(),
         isDraw: game.isDraw(),
+        isGameOver: game.isGameOver(),
     });
 
     const onSquareClick: Props['onSquareClick'] = (square) => {
@@ -163,12 +179,52 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
         game.load(fen);
     };
 
+    const changeInspectValue = (inspect: number | null) => {
+        if (inspect !== null && inspect === 0) {
+            setInspect({ inspect });
+            return game.reset();
+        }
+
+        if (inspect === null && state.history.length > 1) {
+            setInspect({ inspect });
+            return game.load(state.history.at(-1)!.fen);
+        }
+
+        setInspect({ inspect });
+        game.load(state.history[inspect!].fen);
+    };
+
+    const hydrateState = (callback: () => void) => {
+        const hydratedState = storage.hydrateState();
+        if (hydratedState !== null && !!hydratedState.initialTime) {
+            hydrateReducer(hydratedState);
+            game.load(hydratedState.fen);
+        }
+        callback();
+    };
+
+    const onClickNewGame = () => {
+        game.reset();
+        storage.reset();
+        resetGame();
+    };
+
     useEffect(() => {
-        const wTimeout = setTimeout(() => decreaseTimer({ color: 'w' }), 1000);
-        const bTimeout = setTimeout(() => decreaseTimer({ color: 'b' }), 1000);
+        const wTimeout = setTimeout(() => {
+            storage.writeState(state);
+            decreaseTimer({ color: 'w' });
+        }, 1000);
+        const bTimeout = setTimeout(() => {
+            storage.writeState(state);
+            decreaseTimer({ color: 'b' });
+        }, 1000);
 
         const runEffect = () => {
-            if (state.timer.b === 0 || state.timer.w === 0) {
+            if (
+                getMetaData().isGameOver ||
+                state.timer.b === 0 ||
+                state.timer.w === 0
+            ) {
                 clearTimeout(bTimeout);
                 return clearTimeout(wTimeout);
             }
@@ -203,6 +259,9 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
                 getMetaData,
                 onSetupTimer,
                 onRollback,
+                hydrateState,
+                changeInspectValue,
+                onClickNewGame,
                 position: state.fen,
                 history: state.history,
                 squareStyles: state.squareStyles,
@@ -210,6 +269,8 @@ export const ChessProvider: React.FC<ChessProvider> = ({ children }) => {
                 whitesTimer: state.timer.w,
                 /** @todo Remove if not using */
                 isRollBack: state.isRollback,
+                initialTime: state.initialTime,
+                inspectRound: state.inspectRound,
             }}
         >
             {children}
