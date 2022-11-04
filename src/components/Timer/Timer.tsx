@@ -30,12 +30,22 @@ const Timer: React.FC<TimerProps> = ({ timer, isActive }) => {
     }, [timer, formatToTimer]);
 
     return (
-        <div className={classNames}>
-            <span className={styles['timer__number']}>{minutes[0]}</span>
-            <span className={styles['timer__number']}>{minutes[1]}</span>
-            <span className={styles['timer__colon']}>:</span>
-            <span className={styles['timer__number']}>{seconds[0]}</span>
-            <span className={styles['timer__number']}>{seconds[1]}</span>
+        <div className={classNames} data-testid="timer">
+            <span className={styles['timer__number']} data-testid="min0">
+                {minutes[0]}
+            </span>
+            <span className={styles['timer__number']} data-testid="min1">
+                {minutes[1]}
+            </span>
+            <span className={styles['timer__colon']} data-testid="colon">
+                :
+            </span>
+            <span className={styles['timer__number']} data-testid="sec0">
+                {seconds[0]}
+            </span>
+            <span className={styles['timer__number']} data-testid="sec1">
+                {seconds[1]}
+            </span>
         </div>
     );
 };
