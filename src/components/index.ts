@@ -8,3 +8,4 @@ export { default as Timer } from './Timer/Timer';
 export { default as HydrateComponent } from './HydrateComponent/HydrateComponent';
 export { default as ArrowLeft } from './Icons/ArrowLeft';
 export { default as ArrowRight } from './Icons/ArrowRight';
+export { default as MobileModalGameInfo } from './MobileModalGameInfo/MobileModalGameInfo';

@@ -1,0 +1,76 @@
+@import '/src/sass/';
+
+.modal {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background-color: get-color(primary);
+    color: get-color(contrast, light);
+    padding: 1rem;
+    overflow: hidden;
+    transition: all 250ms ease-out;
+    transform: translateY(-83%);
+    height: 25.875rem;
+    z-index: 1000;
+    box-shadow: $button-shadow;
+
+    &__expand-button {
+        cursor: pointer;
+        appearance: none;
+        border: none;
+        font-size: 1rem;
+        background-color: get-color(primary, light);
+        color: get-color(contrast);
+        border-radius: .5rem;
+        font-weight: bold;
+        padding: .5rem 1rem;
+        letter-spacing: .5px;
+        height: 2.5rem;
+        margin-top: auto;
+    }
+
+    &__content {
+        display: flex;
+        width: 100%;
+        padding: 2rem 0;
+        gap: .5rem;
+    }
+
+    &__panel {
+        flex: 1;
+        &:first-child {
+            border-right: 1px solid get-color(contrast, light);
+            padding-right: .5rem;
+        }
+    }
+
+    &__list {
+        list-style: none;
+        display: flex;
+        gap: 2rem;
+    }
+
+    &__list-item {
+        background-color: get-color(primary);
+    }
+
+    &__panel-footer {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        gap: 1rem;
+    }
+
+    &__panel-button {
+        height: 2.5rem;
+        color: get-color(contrast, light);
+    }
+
+    &.active {
+        transform: translateY(0);
+    }
+}
